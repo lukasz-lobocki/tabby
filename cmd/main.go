@@ -20,10 +20,13 @@ func main() {
 
 	_tab := new(table)
 
-	_tab.addHeaders([]string{
+	if err := _tab.addHeaders([]string{
 		"something",
 		"bnother",
-		"one mo" + utils.RED + "r" + utils.RESET + "e"})
+		"one mo" + utils.RED + "r" + utils.RESET + "e",
+	}); err != nil {
+		log.Fatalln(err)
+	}
 
 	if err := _tab.addRow([]string{
 		"uno",
@@ -34,11 +37,14 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	_tab.addRow([]string{
+	if err := _tab.addRow([]string{
 		"jeden",
 		"kl" + utils.RED + "m" + utils.RESET + "no67890",
 		"trzy",
-	})
+	}); err != nil {
+		log.Fatalln(err)
+	}
+
 	if err := _tab.Print(
 		"  ",
 		" ",
@@ -48,20 +54,30 @@ func main() {
 
 }
 
-func (_t *table) addHeaders(headers []string) {
+func (_t *table) addHeaders(headers []string) error {
+
+	// Error if no headers provided
+	if len(headers) < 1 {
+		return errors.New(fmt.Sprint("no headers provided"))
+	}
+
 	*_t = table{
 		Headers: headers,
 	}
+	return nil
 }
 
 func (_t *table) addRow(row []string) error {
-	//log.Printf("headers %d", len(_t.Headers))
+
+	// Error if number of cells in the row exceeds the number of headers
 	if len(row) > len(_t.Headers) {
 		return errors.New(
-			fmt.Sprintf("number of columns %d in the row exceeds the number of headers %d.",
+			fmt.Sprintf("number of columns %d in the row [%s] exceeds the number of headers %d.",
 				len(row),
+				row[0],
 				len(_t.Headers)))
 	}
+
 	_t.Rows = append(_t.Rows, row)
 	return nil
 }
