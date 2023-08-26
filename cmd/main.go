@@ -73,9 +73,9 @@ func (_t *Table) AddRowCells(row []string) error {
 	// Error if number of cells in the row exceeds the number of headers
 	if len(row) > len(_t.headers) {
 		return errors.New(
-			fmt.Sprintf("number of cells %d in the row [%s] exceeds the number of headers %d.",
+			fmt.Sprintf("number of cells %d in the row %v exceeds the number of headers %d.",
 				len(row),
-				row[0],
+				row,
 				len(_t.headers)))
 	}
 
