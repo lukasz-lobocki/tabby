@@ -50,10 +50,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.Print(nil); err != nil {
-		log.Fatalln(err)
-	}
-
+	_tab.Print(nil)
 }
 
 // Adds headers to the table
@@ -87,7 +84,7 @@ func (_t *Table) AddRowCells(row []string) error {
 }
 
 // Prints the table
-func (_t Table) Print(c *Config) error {
+func (_t Table) Print(c *Config) {
 
 	if c == nil {
 		// defaultConfig returns the default config for table
@@ -115,7 +112,7 @@ func (_t Table) Print(c *Config) error {
 				c.padding,
 				c.spacing))
 	}
-	return nil
+	return
 }
 
 // Provides the default config for table
