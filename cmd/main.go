@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 	"unicode/utf8"
@@ -23,17 +24,27 @@ func main() {
 		"something",
 		"bnother",
 		"one mo" + utils.RED + "r" + utils.RESET + "e"})
-	_tab.addRow([]string{
+
+	if err := _tab.addRow([]string{
 		"uno",
 		"dos",
 		"tres",
-	})
+		//"quatro",
+	}); err != nil {
+		log.Fatalln(err)
+	}
+
 	_tab.addRow([]string{
 		"jeden",
 		"kl" + utils.RED + "m" + utils.RESET + "no67890",
 		"trzy",
 	})
-	_tab.Print("  ", " ")
+	if err := _tab.Print(
+		"  ",
+		" ",
+	); err != nil {
+		log.Fatalln(err)
+	}
 
 }
 
@@ -43,8 +54,16 @@ func (_t *table) addHeaders(headers []string) {
 	}
 }
 
-func (_t *table) addRow(row []string) {
+func (_t *table) addRow(row []string) error {
+	//log.Printf("headers %d", len(_t.Headers))
+	if len(row) > len(_t.Headers) {
+		return errors.New(
+			fmt.Sprintf("number of columns %d in the row exceeds the number of headers %d.",
+				len(row),
+				len(_t.Headers)))
+	}
 	_t.Rows = append(_t.Rows, row)
+	return nil
 }
 
 // Prints the table
@@ -129,19 +148,8 @@ func getColumnsWidth(_t table) ([]int, error) {
 		_output[i] = getRuneCount(_header)
 	}
 
-	// Measure rows
-	for i, _row := range _t.Rows {
-
-		// Check for missmatch between number of cells in a row and number of headers
-		if len(_row) != len(_t.Headers) {
-			return nil, errors.New(
-				fmt.Sprintf("number of columns %d in row [%d] does not match the number of headers %d.",
-					len(_row),
-					i,
-					len(_t.Headers)))
-		}
-
-		// Iterate and measure
+	// Iterate and measure rows
+	for _, _row := range _t.Rows {
 		for j, _cell := range _row {
 			if _thisLength := getRuneCount(_cell); _thisLength > _output[j] {
 				_output[j] = _thisLength
