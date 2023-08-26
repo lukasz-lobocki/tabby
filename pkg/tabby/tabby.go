@@ -134,7 +134,7 @@ func formatTableLine(_l []string, _columnsWidth []int, padding string, spacing s
 		// Append each cell padded
 		_ln.WriteString(padRight(_cell, _columnsWidth[i], padding))
 		if i < len(_l)-1 {
-			// Append spacing but not after last column; adding +1 to adjust 0-based loop
+			// Append spacing but not after last column; subtracting -1 to adjust 0-based loop
 			_ln.WriteString(spacing)
 		}
 	}
