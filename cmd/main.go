@@ -46,7 +46,7 @@ func main() {
 func (_t table) Print(spacing string, padding string) error {
 
 	// Measure columns for biggest widht
-	_columnsWidth, err := _t.columnsWidth()
+	_columnsWidth, err := columnsWidth(_t)
 	if err != nil {
 		return fmt.Errorf("error measuring column width. %w", err)
 	}
@@ -85,7 +85,7 @@ func formatLine(_l []string, _columnsWidth []int, padding string, spacing string
 }
 
 // Returns longest runic lenght of each column with header.
-func (_t table) columnsWidth() ([]int, error) {
+func columnsWidth(_t table) ([]int, error) {
 	_output := make([]int, len(_t.Headers))
 
 	// Measure header
