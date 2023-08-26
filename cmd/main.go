@@ -47,14 +47,14 @@ func main() {
 func (_t table) Print(spacing string, padding string) error {
 
 	// Measure columns for biggest widht
-	_columnsWidth, err := columnsWidth(_t)
+	_columnsWidth, err := getColumnsWidth(_t)
 	if err != nil {
 		return fmt.Errorf("error measuring column width. %w", err)
 	}
 
 	// Emit header
 	fmt.Println(
-		formatLine(
+		formatTableLine(
 			_t.Headers,
 			_columnsWidth,
 			padding,
@@ -64,7 +64,7 @@ func (_t table) Print(spacing string, padding string) error {
 	for _, _row := range _t.Rows {
 		// Emit row
 		fmt.Println(
-			formatLine(
+			formatTableLine(
 				_row,
 				_columnsWidth,
 				padding,
@@ -74,8 +74,10 @@ func (_t table) Print(spacing string, padding string) error {
 }
 
 // Formats table line appending cells, padding to given width and spacing between the cells
-func formatLine(_l []string, _columnsWidth []int, padding string, spacing string) string {
+func formatTableLine(_l []string, _columnsWidth []int, padding string, spacing string) string {
+
 	var _ln strings.Builder
+
 	for i, _cell := range _l {
 		// Append each cell padded
 		_ln.WriteString(padRight(_cell, _columnsWidth[i], padding))
@@ -89,30 +91,33 @@ func formatLine(_l []string, _columnsWidth []int, padding string, spacing string
 
 // Returns string padded to visible rune lenght.
 func padRight(input string, lenght int, padding string) string {
+
 	// If input not shorter than lenght, return input
-	if _runeCount := runeCount(input); _runeCount >= lenght {
+	if _runeCount := getRuneCount(input); _runeCount >= lenght {
 		return input
 	}
 
 	// Default padding
-	if runeCount(padding) != 1 {
+	if getRuneCount(padding) != 1 {
 		padding = " "
 	}
 
-	return input + strings.Repeat(padding, lenght-runeCount(input))
+	return input + strings.Repeat(padding, lenght-getRuneCount(input))
 }
 
 // Returns longest runic lenght of each column with header.
-func columnsWidth(_t table) ([]int, error) {
+func getColumnsWidth(_t table) ([]int, error) {
+
 	_output := make([]int, len(_t.Headers))
 
 	// Measure header
 	for i, _header := range _t.Headers {
-		_output[i] = runeCount(_header)
+		_output[i] = getRuneCount(_header)
 	}
 
 	// Measure rows
 	for i, _row := range _t.Rows {
+
 		// Check for missmatch between number of cells in a row and number of headers
 		if len(_row) != len(_t.Headers) {
 			return nil, errors.New(
@@ -124,7 +129,7 @@ func columnsWidth(_t table) ([]int, error) {
 
 		// Iterate and measure
 		for j, _cell := range _row {
-			if _thisLength := runeCount(_cell); _thisLength > _output[j] {
+			if _thisLength := getRuneCount(_cell); _thisLength > _output[j] {
 				_output[j] = _thisLength
 			}
 		}
@@ -133,12 +138,12 @@ func columnsWidth(_t table) ([]int, error) {
 }
 
 // Returns string with ANSI codes removed.
-func removeANSI(input string) string {
+func removeANSICodes(input string) string {
 	_regexp := regexp.MustCompile(`\x1b\[[0-9;]*[mK]`)
 	return _regexp.ReplaceAllString(input, "")
 }
 
 // Returns rune count with ANSI codes removed.
-func runeCount(input string) int {
-	return utf8.RuneCountInString(removeANSI(input))
+func getRuneCount(input string) int {
+	return utf8.RuneCountInString(removeANSICodes(input))
 }
