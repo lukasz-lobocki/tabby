@@ -3,19 +3,23 @@ Prints left-aligned table.
 
 ANSI color sequences within cells do not distort alignment.
 
-	_tabby := new(tabby.Table)
+	_table := new(tabby.Table)
 
-	if err := _tabby.AddHeaders([]string{
+	if err := _table.SetHeader(
+		tabby.Header{
 			"Something",
 			"One mo" + "\033[0;31m" + "r" + "\033[0m" + "e",
-		}); err != nil {log.Fatalln(err)}
+		},
+	); err != nil { log.Fatalln(err) }
 
-	if err := _tabby.AddRowCells([]string{
-		"first",
-		"seco" + "\033[0;31m" + "n" + "\033[0m" + "d_garbage67890",
-	}); err != nil {log.Fatalln(err)}
+	if err := _table.AppendRow(
+		tabby.Row{
+			"first",
+			"seco" + "\033[0;31m" + "n" + "\033[0m" + "d_garbage67890",
+		},
+	); err != nil { log.Fatalln(err) }
 
-	_tabby.Print(nil)
+	_table.Print(nil)
 */
 package tabby
 
@@ -27,10 +31,17 @@ import (
 	"unicode/utf8"
 )
 
-// Table contents to be emitted.
+type ( // Elements of a table
+	line   []string // slice of cells (strings)
+	Header line     // header line
+	Row    line     // row line
+	rows   []Row    // slice of rows
+)
+
+// Contents of a table
 type Table struct {
-	headers []string   // slice of headers
-	rows    [][]string // slice of slices of cells
+	header Header // header of a table
+	rows   rows   // rows of a table
 }
 
 // Strings used for padding and spacing.
@@ -40,22 +51,20 @@ type Config struct {
 }
 
 /*
-Adds headers to the table.
+Sets header of the table.
 
 	params: slice of headers
 
-Headers must be added before adding rows.
+Header must be added before adding rows.
 */
-func (_t *Table) AddHeaders(headers []string) error {
+func (_t *Table) SetHeader(header Header) error {
 
 	// Error if no headers provided
-	if len(headers) < 1 {
-		return errors.New(fmt.Sprint("no headers provided."))
+	if len(header) < 1 {
+		return errors.New(fmt.Sprint("no header provided."))
 	}
 
-	*_t = Table{
-		headers: headers,
-	}
+	_t.header = header
 	return nil
 }
 
@@ -64,17 +73,17 @@ Appends row of cells to the table.
 
 	params: slice of cells
 
-Headers must be added before adding rows. Number of cells must not exceed number of headers.
+Header must be set before appending rows. Number of cells in the row must not exceed number of cells in the header.
 */
-func (_t *Table) AddRowCells(row []string) error {
+func (_t *Table) AppendRow(row Row) error {
 
 	// Error if number of cells in the row exceeds the number of headers
-	if len(row) > len(_t.headers) {
+	if len(row) > len(_t.header) {
 		return errors.New(
 			fmt.Sprintf("number of cells %d in the row %v exceeds the number of headers %d.",
 				len(row),
 				row,
-				len(_t.headers)))
+				len(_t.header)))
 	}
 
 	_t.rows = append(_t.rows, row)
@@ -99,7 +108,7 @@ func (_t *Table) Print(config *Config) {
 	// Emit header
 	fmt.Println(
 		formatTableLine(
-			_t.headers,
+			line(_t.header),
 			_columnsWidth,
 			config.padding,
 			config.spacing))
@@ -109,7 +118,7 @@ func (_t *Table) Print(config *Config) {
 		// Emit row
 		fmt.Println(
 			formatTableLine(
-				_row,
+				line(_row),
 				_columnsWidth,
 				config.padding,
 				config.spacing))
@@ -117,16 +126,8 @@ func (_t *Table) Print(config *Config) {
 	return
 }
 
-// Provides the default config for table
-func getDefaultConfig() *Config {
-	return &Config{
-		padding: " ",
-		spacing: "  ",
-	}
-}
-
 // Formats table line appending cells, padding to given width and spacing between the cells
-func formatTableLine(_l []string, _columnsWidth []int, padding string, spacing string) string {
+func formatTableLine(_l line, _columnsWidth []int, padding string, spacing string) string {
 
 	var _ln strings.Builder
 
@@ -155,10 +156,10 @@ func padRight(input string, lenght int, padding string) string {
 // Returns longest runic lenght of each column with header.
 func getColumnsWidth(_t Table) []int {
 
-	_output := make([]int, len(_t.headers))
+	_output := make([]int, len(_t.header))
 
 	// Measure header
-	for i, _header := range _t.headers {
+	for i, _header := range _t.header {
 		_output[i] = getRuneCount(_header)
 	}
 
@@ -173,13 +174,21 @@ func getColumnsWidth(_t Table) []int {
 	return _output
 }
 
-// Returns string with ANSI codes removed.
-func removeANSICodes(input string) string {
-	_regexp := regexp.MustCompile(`\x1b\[[0-9;]*[mK]`)
-	return _regexp.ReplaceAllString(input, "")
+// Provides the default config for table
+func getDefaultConfig() *Config {
+	return &Config{
+		padding: " ",
+		spacing: "  ",
+	}
 }
 
 // Returns rune count with ANSI codes removed.
 func getRuneCount(input string) int {
 	return utf8.RuneCountInString(removeANSICodes(input))
+}
+
+// Returns string with ANSI codes removed.
+func removeANSICodes(input string) string {
+	_regexp := regexp.MustCompile(`\x1b\[[0-9;]*[mK]`)
+	return _regexp.ReplaceAllString(input, "")
 }

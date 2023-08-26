@@ -71,37 +71,6 @@ func Test_padRight(t *testing.T) {
 	}
 }
 
-func TestTable_AddHeaders(t *testing.T) {
-	type fields struct {
-		headers []string
-		rows    [][]string
-	}
-	type args struct {
-		headers []string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{"Empty", fields{}, args{}, true},
-		{"Single header", fields{}, args{[]string{"first"}}, false},
-		{"Two headers", fields{}, args{[]string{"first", "second"}}, false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_t := &Table{
-				headers: tt.fields.headers,
-				rows:    tt.fields.rows,
-			}
-			if err := _t.AddHeaders(tt.args.headers); (err != nil) != tt.wantErr {
-				t.Errorf("Table.AddHeaders() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
 func Test_getDefaultConfig(t *testing.T) {
 	tests := []struct {
 		name string
@@ -113,65 +82,6 @@ func Test_getDefaultConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := getDefaultConfig(); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("getDefaultConfig() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestTable_AddRowCells(t *testing.T) {
-	type fields struct {
-		headers []string
-		rows    [][]string
-	}
-	type args struct {
-		row []string
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{"Empty", fields{}, args{}, false},
-		{"Single header", fields{headers: []string{"one"}}, args{[]string{"first"}}, false},
-		{"Two headers", fields{headers: []string{"one", "two"}}, args{[]string{"first", "second"}}, false},
-		{"More cells than headers", fields{headers: []string{"one"}}, args{[]string{"first", "second"}}, true},
-		{"Less cells than headers", fields{headers: []string{"one", "two"}}, args{[]string{"first"}}, false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_t := &Table{
-				headers: tt.fields.headers,
-				rows:    tt.fields.rows,
-			}
-			if err := _t.AddRowCells(tt.args.row); (err != nil) != tt.wantErr {
-				t.Errorf("Table.AddRowCells() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
-
-func Test_getColumnsWidth(t *testing.T) {
-	type args struct {
-		_t Table
-	}
-	tests := []struct {
-		name string
-		args args
-		want []int
-	}{
-		{"Empty", args{}, []int{}},
-		{"Just single header", args{Table{headers: []string{"a"}}}, []int{1}},
-		{"Just double header", args{Table{headers: []string{"a", "\033[0;31mŁukasz Ł\033[0mobocki"}}}, []int{1, 14}},
-		{"UTF-8", args{Table{
-			headers: []string{"a", "\033[0;31mŁukasz Ł\033[0mobocki"},
-			rows:    [][]string{{"\033[0;31mŁukasz Ł\033[0mobocki12345", "b"}, {"c", "d"}}}},
-			[]int{19, 14}},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := getColumnsWidth(tt.args._t); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getColumnsWidth() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -209,10 +119,38 @@ func Test_formatTableLine(t *testing.T) {
 	}
 }
 
+func Test_getColumnsWidth(t *testing.T) {
+	type args struct {
+		_t Table
+	}
+	tests := []struct {
+		name string
+		args args
+		want []int
+	}{
+		{"Empty", args{}, []int{}},
+		{"Just single header", args{Table{Header{"a"}, rows{}}}, []int{1}},
+		{"Just double header", args{Table{Header{"a", "\033[0;31mŁukasz Ł\033[0mobocki"}, rows{}}}, []int{1, 14}},
+		{"UTF-8", args{Table{
+			Header{"a", "\033[0;31mŁukasz Ł\033[0mobocki"},
+			rows{Row{
+				"\033[0;31mŁukasz Ł\033[0mobocki12345",
+				"b",
+			}, Row{"c", "d"}}}}, []int{19, 14}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := getColumnsWidth(tt.args._t); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("getColumnsWidth() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestTable_Print(t *testing.T) {
 	type fields struct {
-		headers []string
-		rows    [][]string
+		header Header
+		rows   rows
 	}
 	type args struct {
 		config *Config
@@ -223,15 +161,79 @@ func TestTable_Print(t *testing.T) {
 		args   args
 	}{
 		{"Empty", fields{}, args{nil}},
-		{"Populated", fields{headers: []string{"a"}, rows: [][]string{{"1"}, {"2"}}}, args{nil}},
+		{"Populated", fields{header: Header{"A"}, rows: rows{Row{"1"}, Row{"2"}}}, args{nil}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_t := &Table{
-				headers: tt.fields.headers,
-				rows:    tt.fields.rows,
+				header: tt.fields.header,
+				rows:   tt.fields.rows,
 			}
 			_t.Print(tt.args.config)
+		})
+	}
+}
+
+func TestTable_SetHeader(t *testing.T) {
+	type fields struct {
+		header Header
+		rows   rows
+	}
+	type args struct {
+		header Header
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{"Empty", fields{}, args{}, true},
+		{"Single header", fields{}, args{header: Header{"first"}}, false},
+		{"Double header", fields{}, args{header: Header{"first", "second"}}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_t := &Table{
+				header: tt.fields.header,
+				rows:   tt.fields.rows,
+			}
+			if err := _t.SetHeader(tt.args.header); (err != nil) != tt.wantErr {
+				t.Errorf("Table.SetHeader() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestTable_AppendRow(t *testing.T) {
+	type fields struct {
+		header Header
+		rows   rows
+	}
+	type args struct {
+		row Row
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		wantErr bool
+	}{
+		{"Empty", fields{}, args{}, false},
+		{"Single header", fields{header: Header{"one"}}, args{row: Row{"first"}}, false},
+		{"Double header", fields{header: Header{"one", "two"}}, args{row: Row{"first", "second"}}, false},
+		{"More cells than headers", fields{header: Header{"one"}}, args{row: Row{"first", "second"}}, true},
+		{"Less cells than headers", fields{header: Header{"one", "two"}}, args{row: Row{"first"}}, false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_t := &Table{
+				header: tt.fields.header,
+				rows:   tt.fields.rows,
+			}
+			if err := _t.AppendRow(tt.args.row); (err != nil) != tt.wantErr {
+				t.Errorf("Table.AppendRow() error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
 }

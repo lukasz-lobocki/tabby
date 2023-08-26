@@ -9,32 +9,38 @@ import (
 
 func main() {
 
-	_tab := new(tabby.Table)
+	_table := new(tabby.Table)
 
-	if err := _tab.AddHeaders([]string{
-		"Something",
-		"Another",
-		"One mo" + utils.RED + "r" + utils.RESET + "e",
-	}); err != nil {
+	if err := _table.SetHeader(
+		tabby.Header{
+			"Something",
+			"Another",
+			"One mo" + utils.RED + "r" + utils.RESET + "e",
+		},
+	); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.AddRowCells([]string{
-		"uno",
-		"dos",
-		"tres",
-		//"quatro",
-	}); err != nil {
+	if err := _table.AppendRow(
+		tabby.Row{
+			"uno",
+			"dos",
+			"tres",
+			//"quatrro",
+		},
+	); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.AddRowCells([]string{
-		"first",
-		"seco" + utils.RED + "n" + utils.RESET + "d_garbage67890",
-		"third",
-	}); err != nil {
+	if err := _table.AppendRow(
+		tabby.Row{
+			"first",
+			"seco" + utils.UNDERLINE_GREEN + "n" + utils.RESET + "d_garbage67890",
+			"third",
+		},
+	); err != nil {
 		log.Fatalln(err)
 	}
 
-	_tab.Print(nil)
+	_table.Print(nil)
 }
