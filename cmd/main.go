@@ -11,21 +11,21 @@ import (
 	"github.com/lukasz-lobocki/tabby/pkg/utils"
 )
 
-type table struct {
-	Headers []string
-	Rows    [][]string
+type Table struct {
+	headers []string
+	rows    [][]string
 }
 
-type config struct {
+type Config struct {
 	padding string
 	spacing string
 }
 
 func main() {
 
-	_tab := new(table)
+	_tab := new(Table)
 
-	if err := _tab.addHeaders([]string{
+	if err := _tab.AddHeaders([]string{
 		"something",
 		"bnother",
 		"one mo" + utils.RED + "r" + utils.RESET + "e",
@@ -33,7 +33,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.addRowCells([]string{
+	if err := _tab.AddRowCells([]string{
 		"uno",
 		"dos",
 		"tres",
@@ -42,7 +42,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.addRowCells([]string{
+	if err := _tab.AddRowCells([]string{
 		"jeden",
 		"kl" + utils.RED + "m" + utils.RESET + "no67890",
 		"trzy",
@@ -57,41 +57,41 @@ func main() {
 }
 
 // Adds headers to the table
-func (_t *table) addHeaders(headers []string) error {
+func (_t *Table) AddHeaders(headers []string) error {
 
 	// Error if no headers provided
 	if len(headers) < 1 {
 		return errors.New(fmt.Sprint("no headers provided"))
 	}
 
-	*_t = table{
-		Headers: headers,
+	*_t = Table{
+		headers: headers,
 	}
 	return nil
 }
 
 // Adds row of cells to the table
-func (_t *table) addRowCells(row []string) error {
+func (_t *Table) AddRowCells(row []string) error {
 
 	// Error if number of cells in the row exceeds the number of headers
-	if len(row) > len(_t.Headers) {
+	if len(row) > len(_t.headers) {
 		return errors.New(
 			fmt.Sprintf("number of cells %d in the row [%s] exceeds the number of headers %d.",
 				len(row),
 				row[0],
-				len(_t.Headers)))
+				len(_t.headers)))
 	}
 
-	_t.Rows = append(_t.Rows, row)
+	_t.rows = append(_t.rows, row)
 	return nil
 }
 
 // Prints the table
-func (_t table) Print(c *config) error {
+func (_t Table) Print(c *Config) error {
 
 	if c == nil {
 		// defaultConfig returns the default config for table
-		c = defaultConfig()
+		c = getDefaultConfig()
 	}
 
 	// Measure columns for biggest widht
@@ -100,13 +100,13 @@ func (_t table) Print(c *config) error {
 	// Emit header
 	fmt.Println(
 		formatTableLine(
-			_t.Headers,
+			_t.headers,
 			_columnsWidth,
 			c.padding,
 			c.spacing))
 
 	// Iterate and emit rows
-	for _, _row := range _t.Rows {
+	for _, _row := range _t.rows {
 		// Emit row
 		fmt.Println(
 			formatTableLine(
@@ -119,8 +119,8 @@ func (_t table) Print(c *config) error {
 }
 
 // Provides the default config for table
-func defaultConfig() *config {
-	return &config{
+func getDefaultConfig() *Config {
+	return &Config{
 		padding: " ",
 		spacing: "  ",
 	}
@@ -154,17 +154,17 @@ func padRight(input string, lenght int, padding string) string {
 }
 
 // Returns longest runic lenght of each column with header.
-func getColumnsWidth(_t table) []int {
+func getColumnsWidth(_t Table) []int {
 
-	_output := make([]int, len(_t.Headers))
+	_output := make([]int, len(_t.headers))
 
 	// Measure header
-	for i, _header := range _t.Headers {
+	for i, _header := range _t.headers {
 		_output[i] = getRuneCount(_header)
 	}
 
 	// Iterate and measure rows
-	for _, _row := range _t.Rows {
+	for _, _row := range _t.rows {
 		for j, _cell := range _row {
 			if _thisLength := getRuneCount(_cell); _thisLength > _output[j] {
 				_output[j] = _thisLength
