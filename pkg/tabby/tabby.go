@@ -1,3 +1,22 @@
+/*
+Prints left-aligned table.
+
+ANSI color sequences within cells do not distort alignment.
+
+	_tabby := new(tabby.Table)
+
+	if err := _tabby.AddHeaders([]string{
+			"Something",
+			"One mo" + "\033[0;31m" + "r" + "\033[0m" + "e",
+		}); err != nil {log.Fatalln(err)}
+
+	if err := _tabby.AddRowCells([]string{
+		"first",
+		"seco" + "\033[0;31m" + "n" + "\033[0m" + "d_garbage67890",
+	}); err != nil {log.Fatalln(err)}
+
+	_tabby.Print(nil)
+*/
 package tabby
 
 import (
@@ -8,17 +27,25 @@ import (
 	"unicode/utf8"
 )
 
+// Table contents to be emitted.
 type Table struct {
-	headers []string
-	rows    [][]string
+	headers []string   // slice of headers
+	rows    [][]string // slice of slices of cells
 }
 
+// Strings used for padding and spacing.
 type Config struct {
-	padding string
-	spacing string
+	padding string // chars added to the right of cell contents
+	spacing string // chars added between cells
 }
 
-// Adds headers to the table
+/*
+Adds headers to the table.
+
+	params: slice of headers
+
+Headers must be added before adding rows.
+*/
 func (_t *Table) AddHeaders(headers []string) error {
 
 	// Error if no headers provided
@@ -32,7 +59,13 @@ func (_t *Table) AddHeaders(headers []string) error {
 	return nil
 }
 
-// Appends row of cells to the table
+/*
+Appends row of cells to the table.
+
+	params: slice of cells
+
+Headers must be added before adding rows. Number of cells must not exceed number of headers.
+*/
 func (_t *Table) AddRowCells(row []string) error {
 
 	// Error if number of cells in the row exceeds the number of headers
@@ -48,24 +81,28 @@ func (_t *Table) AddRowCells(row []string) error {
 	return nil
 }
 
-// Prints the table
-func (_t Table) Print(c *Config) {
+/*
+Prints the table.
 
-	if c == nil {
+	params: config structure (optional)
+*/
+func (_t *Table) Print(config *Config) {
+
+	if config == nil {
 		// defaultConfig returns the default config for table
-		c = getDefaultConfig()
+		config = getDefaultConfig()
 	}
 
 	// Measure columns for biggest widht
-	_columnsWidth := getColumnsWidth(_t)
+	_columnsWidth := getColumnsWidth(*_t)
 
 	// Emit header
 	fmt.Println(
 		formatTableLine(
 			_t.headers,
 			_columnsWidth,
-			c.padding,
-			c.spacing))
+			config.padding,
+			config.spacing))
 
 	// Iterate and emit rows
 	for _, _row := range _t.rows {
@@ -74,8 +111,8 @@ func (_t Table) Print(c *Config) {
 			formatTableLine(
 				_row,
 				_columnsWidth,
-				c.padding,
-				c.spacing))
+				config.padding,
+				config.spacing))
 	}
 	return
 }

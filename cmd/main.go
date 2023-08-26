@@ -12,9 +12,9 @@ func main() {
 	_tab := new(tabby.Table)
 
 	if err := _tab.AddHeaders([]string{
-		"something",
-		"bnother",
-		"one mo" + utils.RED + "r" + utils.RESET + "e",
+		"Something",
+		"Another",
+		"One mo" + utils.RED + "r" + utils.RESET + "e",
 	}); err != nil {
 		log.Fatalln(err)
 	}
@@ -29,9 +29,9 @@ func main() {
 	}
 
 	if err := _tab.AddRowCells([]string{
-		"jeden",
-		"kl" + utils.RED + "m" + utils.RESET + "no67890",
-		"trzy",
+		"first",
+		"seco" + utils.RED + "n" + utils.RESET + "d_garbage67890",
+		"third",
 	}); err != nil {
 		log.Fatalln(err)
 	}
