@@ -16,6 +16,11 @@ type table struct {
 	Rows    [][]string
 }
 
+type config struct {
+	padding string
+	spacing string
+}
+
 func main() {
 
 	_tab := new(table)
@@ -45,15 +50,13 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.Print(
-		"  ",
-		" ",
-	); err != nil {
+	if err := _tab.Print(nil); err != nil {
 		log.Fatalln(err)
 	}
 
 }
 
+// Adds headers to the table
 func (_t *table) addHeaders(headers []string) error {
 
 	// Error if no headers provided
@@ -67,6 +70,7 @@ func (_t *table) addHeaders(headers []string) error {
 	return nil
 }
 
+// Adds row of cells to the table
 func (_t *table) addRowCells(row []string) error {
 
 	// Error if number of cells in the row exceeds the number of headers
@@ -83,36 +87,23 @@ func (_t *table) addRowCells(row []string) error {
 }
 
 // Prints the table
-func (_t table) Print(spacing string, padding string) error {
+func (_t table) Print(c *config) error {
 
-	const (
-		DEFAULT_PADDING string = " "  // Pad with single space
-		DEFAULT_SPACING string = "  " // Space with 2 spaces
-	)
+	if c == nil {
+		// defaultConfig returns the default config for table
+		c = defaultConfig()
+	}
 
 	// Measure columns for biggest widht
-	_columnsWidth, err := getColumnsWidth(_t)
-	if err != nil {
-		return fmt.Errorf("error measuring column width. %w", err)
-	}
-
-	// Default padding
-	if getRuneCount(padding) != 1 {
-		padding = DEFAULT_PADDING
-	}
-
-	// Default spacing
-	if getRuneCount(spacing) == 0 {
-		spacing = DEFAULT_SPACING
-	}
+	_columnsWidth := getColumnsWidth(_t)
 
 	// Emit header
 	fmt.Println(
 		formatTableLine(
 			_t.Headers,
 			_columnsWidth,
-			padding,
-			spacing))
+			c.padding,
+			c.spacing))
 
 	// Iterate and emit rows
 	for _, _row := range _t.Rows {
@@ -121,10 +112,18 @@ func (_t table) Print(spacing string, padding string) error {
 			formatTableLine(
 				_row,
 				_columnsWidth,
-				padding,
-				spacing))
+				c.padding,
+				c.spacing))
 	}
 	return nil
+}
+
+// Provides the default config for table
+func defaultConfig() *config {
+	return &config{
+		padding: " ",
+		spacing: "  ",
+	}
 }
 
 // Formats table line appending cells, padding to given width and spacing between the cells
@@ -155,7 +154,7 @@ func padRight(input string, lenght int, padding string) string {
 }
 
 // Returns longest runic lenght of each column with header.
-func getColumnsWidth(_t table) ([]int, error) {
+func getColumnsWidth(_t table) []int {
 
 	_output := make([]int, len(_t.Headers))
 
@@ -172,7 +171,7 @@ func getColumnsWidth(_t table) ([]int, error) {
 			}
 		}
 	}
-	return _output, nil
+	return _output
 }
 
 // Returns string with ANSI codes removed.
