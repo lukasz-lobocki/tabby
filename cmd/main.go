@@ -41,6 +41,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	}
+
 }
 
 func (_t table) Print(spacing string, padding string) error {
@@ -62,15 +63,17 @@ func (_t table) Print(spacing string, padding string) error {
 	// Iterate over rows
 	for _, _row := range _t.Rows {
 		// Emit row
-		fmt.Println(formatLine(
-			_row,
-			_columnsWidth,
-			padding,
-			spacing))
+		fmt.Println(
+			formatLine(
+				_row,
+				_columnsWidth,
+				padding,
+				spacing))
 	}
 	return nil
 }
 
+// Formats table line appending cells, padding to given width and spacing between the cells
 func formatLine(_l []string, _columnsWidth []int, padding string, spacing string) string {
 	var _ln strings.Builder
 	for i, _cell := range _l {
@@ -82,6 +85,21 @@ func formatLine(_l []string, _columnsWidth []int, padding string, spacing string
 		}
 	}
 	return _ln.String()
+}
+
+// Returns string padded to visible rune lenght.
+func padRight(input string, lenght int, padding string) string {
+	// If input not shorter than lenght, return input
+	if _runeCount := runeCount(input); _runeCount >= lenght {
+		return input
+	}
+
+	// Default padding
+	if runeCount(padding) != 1 {
+		padding = " "
+	}
+
+	return input + strings.Repeat(padding, lenght-runeCount(input))
 }
 
 // Returns longest runic lenght of each column with header.
@@ -123,19 +141,4 @@ func removeANSI(input string) string {
 // Returns rune count with ANSI codes removed.
 func runeCount(input string) int {
 	return utf8.RuneCountInString(removeANSI(input))
-}
-
-// Returns string padded to visible rune lenght.
-func padRight(input string, lenght int, padding string) string {
-	// If input not shorter than lenght, return input
-	if _runeCount := runeCount(input); _runeCount >= lenght {
-		return input
-	}
-
-	// Default padding
-	if runeCount(padding) != 1 {
-		padding = " "
-	}
-
-	return input + strings.Repeat(padding, lenght-runeCount(input))
 }
