@@ -46,10 +46,25 @@ func main() {
 
 func (_t table) Print(spacing string, padding string) error {
 
+	const (
+		DEFAULT_PADDING string = " "  // Pad with single space
+		DEFAULT_SPACING string = "  " // Space with 2 spaces
+	)
+
 	// Measure columns for biggest widht
 	_columnsWidth, err := getColumnsWidth(_t)
 	if err != nil {
 		return fmt.Errorf("error measuring column width. %w", err)
+	}
+
+	// Default padding
+	if getRuneCount(padding) != 1 {
+		padding = DEFAULT_PADDING
+	}
+
+	// Default spacing
+	if getRuneCount(spacing) == 0 {
+		spacing = DEFAULT_SPACING
 	}
 
 	// Emit header
@@ -82,7 +97,7 @@ func formatTableLine(_l []string, _columnsWidth []int, padding string, spacing s
 		// Append each cell padded
 		_ln.WriteString(padRight(_cell, _columnsWidth[i], padding))
 		if i < len(_l)-1 {
-			// Append spacing but not after last column; adding +1 to adjust 0-based loop.
+			// Append spacing but not after last column; adding +1 to adjust 0-based loop
 			_ln.WriteString(spacing)
 		}
 	}
@@ -95,11 +110,6 @@ func padRight(input string, lenght int, padding string) string {
 	// If input not shorter than lenght, return input
 	if _runeCount := getRuneCount(input); _runeCount >= lenght {
 		return input
-	}
-
-	// Default padding
-	if getRuneCount(padding) != 1 {
-		padding = " "
 	}
 
 	return input + strings.Repeat(padding, lenght-getRuneCount(input))
