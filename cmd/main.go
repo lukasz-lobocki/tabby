@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-	"tabula/pkg/utils"
 	"unicode/utf8"
+
+	"github.com/lukasz-lobocki/tabby/pkg/utils"
 )
 
 type table struct {
