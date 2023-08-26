@@ -58,7 +58,7 @@ func (_t *Table) AddHeaders(headers []string) error {
 
 	// Error if no headers provided
 	if len(headers) < 1 {
-		return errors.New(fmt.Sprint("no headers provided"))
+		return errors.New(fmt.Sprint("no headers provided."))
 	}
 
 	*_t = Table{
