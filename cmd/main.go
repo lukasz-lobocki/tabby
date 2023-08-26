@@ -44,6 +44,7 @@ func main() {
 
 }
 
+// Prints the table
 func (_t table) Print(spacing string, padding string) error {
 
 	const (
@@ -75,7 +76,7 @@ func (_t table) Print(spacing string, padding string) error {
 			padding,
 			spacing))
 
-	// Iterate over rows
+	// Iterate and emit rows
 	for _, _row := range _t.Rows {
 		// Emit row
 		fmt.Println(
