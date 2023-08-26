@@ -28,7 +28,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.addRow([]string{
+	if err := _tab.addRowCells([]string{
 		"uno",
 		"dos",
 		"tres",
@@ -37,7 +37,7 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	if err := _tab.addRow([]string{
+	if err := _tab.addRowCells([]string{
 		"jeden",
 		"kl" + utils.RED + "m" + utils.RESET + "no67890",
 		"trzy",
@@ -67,12 +67,12 @@ func (_t *table) addHeaders(headers []string) error {
 	return nil
 }
 
-func (_t *table) addRow(row []string) error {
+func (_t *table) addRowCells(row []string) error {
 
 	// Error if number of cells in the row exceeds the number of headers
 	if len(row) > len(_t.Headers) {
 		return errors.New(
-			fmt.Sprintf("number of columns %d in the row [%s] exceeds the number of headers %d.",
+			fmt.Sprintf("number of cells %d in the row [%s] exceeds the number of headers %d.",
 				len(row),
 				row[0],
 				len(_t.Headers)))
