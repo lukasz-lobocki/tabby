@@ -17,31 +17,34 @@ type table struct {
 
 func main() {
 
-	_table := table{
-		Headers: []string{
-			"something",
-			"another",
-			"one mo" + utils.RED + "r" + utils.RESET + "e",
-		},
-		Rows: [][]string{
-			{
-				"a",
-				"bc",
-				"def",
-			},
-			{
-				"ghij",
-				"kl" + utils.RED + "m" + utils.RESET + "no67890",
-				"pqrstu",
-			},
-		},
-	}
+	_tab := new(table)
 
-	err := _table.Print("  ", " ")
-	if err != nil {
-		fmt.Println(err)
-	}
+	_tab.addHeaders([]string{
+		"something",
+		"bnother",
+		"one mo" + utils.RED + "r" + utils.RESET + "e"})
+	_tab.addRow([]string{
+		"uno",
+		"dos",
+		"tres",
+	})
+	_tab.addRow([]string{
+		"jeden",
+		"kl" + utils.RED + "m" + utils.RESET + "no67890",
+		"trzy",
+	})
+	_tab.Print("  ", " ")
 
+}
+
+func (_t *table) addHeaders(headers []string) {
+	*_t = table{
+		Headers: headers,
+	}
+}
+
+func (_t *table) addRow(row []string) {
+	_t.Rows = append(_t.Rows, row)
 }
 
 // Prints the table
