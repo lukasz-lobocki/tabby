@@ -1,14 +1,11 @@
-package main
+package tabby
 
 import (
 	"errors"
 	"fmt"
-	"log"
 	"regexp"
 	"strings"
 	"unicode/utf8"
-
-	"github.com/lukasz-lobocki/tabby/pkg/utils"
 )
 
 type Table struct {
@@ -19,38 +16,6 @@ type Table struct {
 type Config struct {
 	padding string
 	spacing string
-}
-
-func main() {
-
-	_tab := new(Table)
-
-	if err := _tab.AddHeaders([]string{
-		"something",
-		"bnother",
-		"one mo" + utils.RED + "r" + utils.RESET + "e",
-	}); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := _tab.AddRowCells([]string{
-		"uno",
-		"dos",
-		"tres",
-		//"quatro",
-	}); err != nil {
-		log.Fatalln(err)
-	}
-
-	if err := _tab.AddRowCells([]string{
-		"jeden",
-		"kl" + utils.RED + "m" + utils.RESET + "no67890",
-		"trzy",
-	}); err != nil {
-		log.Fatalln(err)
-	}
-
-	_tab.Print(nil)
 }
 
 // Adds headers to the table
