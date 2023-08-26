@@ -67,7 +67,7 @@ func (_t *Table) AddHeaders(headers []string) error {
 	return nil
 }
 
-// Adds row of cells to the table
+// Appends row of cells to the table
 func (_t *Table) AddRowCells(row []string) error {
 
 	// Error if number of cells in the row exceeds the number of headers
