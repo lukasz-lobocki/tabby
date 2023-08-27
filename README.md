@@ -40,6 +40,8 @@ func main() {
 	}
 
 	table.Print(nil)
+	// alternatively, with Config provided:
+	table.Print(&tabby.Config{Spacing: "|", Padding: "."})	
 }
 ```
 
