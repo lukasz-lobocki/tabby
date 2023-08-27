@@ -46,8 +46,8 @@ type Table struct {
 
 // Strings used for padding and spacing.
 type Config struct {
-	padding string // chars added to the right of cell contents
-	spacing string // chars added between cells
+	Padding string // chars added to the right of cell contents
+	Spacing string // chars added between cells
 }
 
 /*
