@@ -1,22 +1,3 @@
-/*
-Prints left-aligned table.
-
-ANSI color sequences within cells do not distort alignment.
-
-	_tabby := new(tabby.Table)
-
-	if err := _tabby.AddHeaders([]string{
-			"Something",
-			"One mo" + "\033[0;31m" + "r" + "\033[0m" + "e",
-		}); err != nil {log.Fatalln(err)}
-
-	if err := _tabby.AddRowCells([]string{
-		"first",
-		"seco" + "\033[0;31m" + "n" + "\033[0m" + "d_garbage67890",
-	}); err != nil {log.Fatalln(err)}
-
-	_tabby.Print(nil)
-*/
 package tabby
 
 import (

@@ -4,43 +4,39 @@ import (
 	"log"
 
 	"github.com/lukasz-lobocki/tabby/pkg/tabby"
-	"github.com/lukasz-lobocki/tabby/pkg/utils"
 )
 
 func main() {
 
-	_table := new(tabby.Table)
+	table := new(tabby.Table)
 
-	if err := _table.SetHeader(
-		tabby.Header{
-			"Something",
-			"Another",
-			"One mo" + utils.RED + "r" + utils.RESET + "e",
-		},
-	); err != nil {
+	if err := table.SetHeader(tabby.Header{
+		"\033[4mFIRST\033[0m",
+		"\033[4mSECOND\033[0m",
+	}); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := _table.AppendRow(
-		tabby.Row{
-			"uno",
-			"dos",
-			"tres",
-			//"quatrro",
-		},
-	); err != nil {
+	if err := table.AppendRow(tabby.Row{
+		"uno",
+		"dos",
+	}); err != nil {
 		log.Fatalln(err)
 	}
 
-	if err := _table.AppendRow(
-		tabby.Row{
-			"first",
-			"seco" + utils.UNDERLINE_GREEN + "n" + utils.RESET + "d_garbage67890",
-			"third",
-		},
-	); err != nil {
+	if err := table.AppendRow(tabby.Row{
+		"ein \033[4;33mzwei\033[0m drei",
+		"vier",
+	}); err != nil {
 		log.Fatalln(err)
 	}
 
-	_table.Print(nil)
+	if err := table.AppendRow(tabby.Row{
+		"bądź co nieco",
+		"Będzin \033[0;31mkróluje\033[0m nad Polską",
+	}); err != nil {
+		log.Fatalln(err)
+	}
+
+	table.Print(nil)
 }

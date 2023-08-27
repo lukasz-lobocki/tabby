@@ -1,25 +1,25 @@
 /*
-Prints left-aligned table.
+Prints left-aligned table. ANSI color sequences within cells do not distort the alignment.
 
-ANSI color sequences within cells do not distort alignment.
+Example:
 
-	_table := new(tabby.Table)
+	table := new(tabby.Table)
 
-	if err := _table.SetHeader(
-		tabby.Header{
-			"Something",
-			"One mo" + "\033[0;31m" + "r" + "\033[0m" + "e",
-		},
-	); err != nil { log.Fatalln(err) }
+	if err := table.SetHeader(tabby.Header{
+		"\033[4mFIRST\033[0m",
+		"\033[4mSECOND\033[0m",
+	}); err != nil {
+		log.Fatalln(err)
+	}
 
-	if err := _table.AppendRow(
-		tabby.Row{
-			"first",
-			"seco" + "\033[0;31m" + "n" + "\033[0m" + "d_garbage67890",
-		},
-	); err != nil { log.Fatalln(err) }
+	if err := table.AppendRow(tabby.Row{
+		"ein \033[4;33mzwei\033[0m drei",
+		"vier",
+	}); err != nil {
+		log.Fatalln(err)
+	}
 
-	_table.Print(nil)
+	table.Print(nil)
 */
 package tabby
 
