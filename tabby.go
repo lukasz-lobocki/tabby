@@ -110,8 +110,8 @@ func (_t *Table) Print(config *Config) {
 		formatTableLine(
 			line(_t.header),
 			_columnsWidth,
-			config.padding,
-			config.spacing))
+			config.Padding,
+			config.Spacing))
 
 	// Iterate and emit rows
 	for _, _row := range _t.rows {
@@ -120,8 +120,8 @@ func (_t *Table) Print(config *Config) {
 			formatTableLine(
 				line(_row),
 				_columnsWidth,
-				config.padding,
-				config.spacing))
+				config.Padding,
+				config.Spacing))
 	}
 	return
 }
@@ -177,8 +177,8 @@ func getColumnsWidth(_t Table) []int {
 // Provides the default config for table
 func getDefaultConfig() *Config {
 	return &Config{
-		padding: " ",
-		spacing: "  ",
+		Padding: " ",
+		Spacing: "  ",
 	}
 }
 
