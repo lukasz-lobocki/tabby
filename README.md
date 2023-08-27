@@ -47,6 +47,12 @@ func main() {
 
 ![Alt text](<Screenshot from 2023-08-27 06-04-58.png>)
 
+## Installation
+
+```bash
+go get github.com/lukasz-lobocki/tabby@latest
+```
+
 ## Credits
 
 Inspired by [table](https://github.com/tomlazar/table) and [tabby](https://github.com/cheynewallace/tabby).
