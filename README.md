@@ -7,6 +7,10 @@ ANSI color sequences within cells **do not** distort the alignment.
 ## Usage
 
 ```golang
+package main
+
+import 	"github.com/lukasz-lobocki/tabby"
+
 func main() {
 
 	table := new(tabby.Table)
@@ -26,7 +30,7 @@ func main() {
 	}
 
 	if err := table.AppendRow(tabby.Row{
-		"ein \033[4;33mzwei\033[0m drei",
+		"eins \033[4;33mzwei\033[0m drei",
 		"vier",
 	}); err != nil {
 		log.Fatalln(err)
@@ -34,20 +38,20 @@ func main() {
 
 	if err := table.AppendRow(tabby.Row{
 		"bądź co nieco",
-		"Będzin \033[0;31mkróluje\033[0m nad Polską",
+		"Będzin \033[0;31mwątły królik\033[0m mąką",
 	}); err != nil {
 		log.Fatalln(err)
 	}
 
 	table.Print(nil)
 	// alternatively, with Config provided:
-	table.Print(&tabby.Config{Spacing: "|", Padding: "."})	
+	// table.Print(&tabby.Config{Spacing: "|", Padding: "."})
 }
 ```
 
 ## Result
 
-![Alt text](<Screenshot from 2023-08-27 06-04-58.png>)
+![Alt text](<out.png>)
 
 ## Installation
 
