@@ -33,9 +33,8 @@ import (
 
 // Elements of a table: Header and []Row.
 type (
-	line   []string // slice of cells (strings).
-	Header line     // header line, slice of header cells, []string.
-	Row    line     // row line, slice of row cells, []string.
+	Header []string // header line, slice of header cells, []string.
+	Row    []string // row line, slice of row cells, []string.
 )
 
 // Contents of a table.
@@ -108,7 +107,7 @@ func (_t *Table) Print(config *Config) {
 	// Emit header
 	fmt.Println(
 		formatTableLine(
-			line(_t.header),
+			_t.header,
 			_columnsWidth,
 			config.Padding,
 			config.Spacing))
@@ -118,7 +117,7 @@ func (_t *Table) Print(config *Config) {
 		// Emit row
 		fmt.Println(
 			formatTableLine(
-				line(_row),
+				_row,
 				_columnsWidth,
 				config.Padding,
 				config.Spacing))
@@ -129,7 +128,7 @@ func (_t *Table) Print(config *Config) {
 /*
 Formats table line appending cells, padding to given width and spacing between the cells.
 */
-func formatTableLine(_l line, _columnsWidth []int, padding string, spacing string) string {
+func formatTableLine(_l []string, _columnsWidth []int, padding string, spacing string) string {
 
 	var _ln strings.Builder
 

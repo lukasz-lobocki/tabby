@@ -114,10 +114,10 @@ func Test_getColumnsWidth(t *testing.T) {
 		{"Just double header", args{Table{Header{"a", "\033[0;31mŁukasz Ł\033[0mobocki"}, []Row{}}}, []int{1, 14}},
 		{"UTF-8", args{Table{
 			Header{"a", "\033[0;31mŁukasz Ł\033[0mobocki"},
-			[]Row{Row{
+			[]Row{{
 				"\033[0;31mŁukasz Ł\033[0mobocki12345",
 				"b",
-			}, Row{"c", "d"}}}}, []int{19, 14}},
+			}, {"c", "d"}}}}, []int{19, 14}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -142,7 +142,7 @@ func TestTable_Print(t *testing.T) {
 		args   args
 	}{
 		{"Empty", fields{}, args{nil}},
-		{"Populated", fields{header: Header{"A"}, rows: []Row{Row{"1"}, Row{"2"}}}, args{nil}},
+		{"Populated", fields{header: Header{"A"}, rows: []Row{{"1"}, {"2"}}}, args{nil}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
