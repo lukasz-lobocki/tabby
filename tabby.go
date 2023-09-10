@@ -31,10 +31,10 @@ import (
 	"unicode/utf8"
 )
 
-// Elements of a table: Header and []Row.
+// Elements of a table.
 type (
-	Header []string // header line, slice of header cells, []string.
-	Row    []string // row line, slice of row cells, []string.
+	Header []string // header line, slice of header cells.
+	Row    []string // row line, slice of row cells.
 )
 
 // Contents of a table.
