@@ -36,13 +36,12 @@ type (
 	line   []string // slice of cells (strings).
 	Header line     // header line, slice of header cells, []string.
 	Row    line     // row line, slice of row cells, []string.
-	rows   []Row    // slice of rows.
 )
 
 // Contents of a table.
 type Table struct {
 	header Header // header of a table.
-	rows   rows   // rows of a table.
+	rows   []Row  // rows of a table.
 }
 
 // Strings used for padding and spacing.
