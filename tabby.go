@@ -31,11 +31,11 @@ import (
 	"unicode/utf8"
 )
 
-// Elements of a table
+// Elements of a table: Header and []Row.
 type (
 	line   []string // slice of cells (strings).
-	Header line     // header line.
-	Row    line     // row line.
+	Header line     // header line, slice of header cells, []string.
+	Row    line     // row line, slice of row cells, []string.
 	rows   []Row    // slice of rows.
 )
 
@@ -47,14 +47,14 @@ type Table struct {
 
 // Strings used for padding and spacing.
 type Config struct {
-	Padding string // chars added to the right of cell contents.
-	Spacing string // chars added between cells.
+	Padding string // chars added to the right of cell contents, defaults to " ".
+	Spacing string // chars added between cells, defaults to "  ".
 }
 
 /*
 Sets header of the table.
 
-params: slice of headers.
+'header': slice of header cells.
 
 Header must be added before adding rows.
 */
@@ -72,7 +72,7 @@ func (_t *Table) SetHeader(header Header) error {
 /*
 Appends row of cells to the table.
 
-params: slice of cells
+'row': slice of row cells
 
 Header must be set before appending rows. Number of cells in the row must not exceed number of cells in the header.
 */
@@ -81,7 +81,7 @@ func (_t *Table) AppendRow(row Row) error {
 	// Error if number of cells in the row exceeds the number of headers
 	if len(row) > len(_t.header) {
 		return errors.New(
-			fmt.Sprintf("number of cells %d in the row %v exceeds the number of headers %d.",
+			fmt.Sprintf("number of cells %d in the row %v exceeds the number of cells in the header %d.",
 				len(row),
 				row,
 				len(_t.header)))
