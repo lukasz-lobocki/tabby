@@ -60,7 +60,7 @@ func (_t *Table) SetHeader(header Header) error {
 
 	// Error if no headers provided
 	if len(header) < 1 {
-		return errors.New(fmt.Sprint("no header provided."))
+		return errors.New("no header provided")
 	}
 
 	_t.header = header
@@ -78,11 +78,10 @@ func (_t *Table) AppendRow(row Row) error {
 
 	// Error if number of cells in the row exceeds the number of headers
 	if len(row) > len(_t.header) {
-		return errors.New(
-			fmt.Sprintf("number of cells %d in the row %v exceeds the number of cells in the header %d.",
-				len(row),
-				row,
-				len(_t.header)))
+		return fmt.Errorf("number of cells %d in the row %v exceeds the number of cells in the header %d",
+			len(row),
+			row,
+			len(_t.header))
 	}
 
 	_t.rows = append(_t.rows, row)
@@ -122,7 +121,6 @@ func (_t *Table) Print(config *Config) {
 				config.Padding,
 				config.Spacing))
 	}
-	return
 }
 
 /*
