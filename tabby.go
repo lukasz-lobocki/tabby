@@ -200,6 +200,23 @@ func getRuneCount(input string) int {
 Returns string with ANSI codes removed.
 */
 func removeANSICodes(input string) string {
-	_regexp := regexp.MustCompile(`\x1b\[[0-9;]*[mK]`)
+	/*
+		The regular expression you provided seems to be looking for ANSI escape codes used in terminal/console applications. This regex pattern can be broken down as follows:
+
+		1. `\x1b\[[0-9;]*[mK]`: This part matches ANSI color and formatting escape codes. Here's the breakdown:
+		- `\x1b`: Matches the escape character (ASCII code 27).
+		- `\[[0-9;]*`: Matches any sequence of digits and semicolons, which are used in ANSI escape codes to specify color and formatting options.
+		- `[mK]`: Matches the ending characters 'm' or 'K' often used in ANSI escape codes.
+
+		2. `|`: states alternative
+
+		3. `\x1b\]8;;.*\a`: This part matches a specific type of escape sequence used for hyperlinking in some terminal emulators:
+		- `\x1b\]8;;`: Matches the start of the hyperlink escape sequence.
+		- `.*`: Matches any characters (the actual URL or hyperlink text).
+		- `\a`: Matches the BEL (bell) character (ASCII code 7), which indicates the end of the hyperlink escape sequence.
+
+		In summary, this regex pattern can be used to find and extract ANSI escape codes for text formatting and colors, as well as hyperlink escape sequences in terminal/console output.
+	*/
+	_regexp := regexp.MustCompile(`(?U)\x1b\[[0-9;]*[mK]|\x1b\]8;;.*\a`)
 	return _regexp.ReplaceAllString(input, "")
 }
