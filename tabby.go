@@ -100,7 +100,7 @@ func (_t *Table) Print(config *Config) {
 		config = getDefaultConfig()
 	}
 
-	// Measure columns for biggest widht
+	// Measure columns for biggest width
 	_columnsWidth := getColumnsWidth(*_t)
 
 	// Emit header
@@ -142,20 +142,20 @@ func formatTableLine(_l []string, _columnsWidth []int, padding string, spacing s
 }
 
 /*
-Returns string padded to visible rune lenght.
+Returns string padded to visible rune length.
 */
-func padRight(input string, lenght int, padding string) string {
+func padRight(input string, length int, padding string) string {
 
-	// If input not shorter than lenght, return input
-	if _runeCount := getRuneCount(input); _runeCount >= lenght {
+	// If input not shorter than length, return input
+	if _runeCount := getRuneCount(input); _runeCount >= length {
 		return input
 	}
 
-	return input + strings.Repeat(padding, lenght-getRuneCount(input))
+	return input + strings.Repeat(padding, length-getRuneCount(input))
 }
 
 /*
-Returns longest runic lenght of each column with header.
+Returns longest runic length of each column with header.
 */
 func getColumnsWidth(_t Table) []int {
 
